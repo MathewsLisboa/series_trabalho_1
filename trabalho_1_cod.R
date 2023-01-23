@@ -1,13 +1,15 @@
-# Trabalho de Séries - ARIMA - ID 1211
-setwd("D:/Users/Mathews/Documents/UNB_mestrado/Series/Trabalho_1")
-
-# Pacotes
 library(Mcomp)
 library(forecast) 
 library(tidyverse)
 library(tseries)
 library(xtable)
 library(cowplot)
+library(rstudioapi) 
+
+# Trabalho de Séries - ARIMA - ID 1211
+setwd(dirname(getActiveDocumentContext()$path))  
+getwd()
+# Pacotes
 
 data(M3)
 
@@ -493,6 +495,9 @@ autoplot(treino) + xlab("Ano") + ylab("Valor Observado") +
   scale_colour_manual(values = c("ARIMA" = "#8B0000", "Observações" = "black"), breaks = c("ARIMA", "Observações"), name = "") 
 ggsave("imagens/preds_arima.png", width = 158, height = 93, units = "mm")
 
+xtable(arima_preds %>% as.data.frame())
+
+
 arima_box_preds <- forecast(mod_box_cox, h = h, level = c(95))
 autoplot(treino) + xlab("Ano") + ylab("Valor Observado") +
   theme_bw() +
@@ -501,6 +506,7 @@ autoplot(treino) + xlab("Ano") + ylab("Valor Observado") +
   scale_colour_manual(values = c("ARIMA Box-Cox" = "#8B0000", "Observações" = "black"), breaks = c("ARIMA Box-Cox", "Observações"), name = "") 
 ggsave("imagens/preds_arima_cox.png", width = 158, height = 93, units = "mm")
 
+xtable(arima_box_preds %>% as.data.frame())
 
 ets_preds <- forecast(mod_ets, h = h, level = c(95))
 autoplot(treino) + xlab("Ano") + ylab("Valor Observado") +
@@ -511,14 +517,19 @@ autoplot(treino) + xlab("Ano") + ylab("Valor Observado") +
 ggsave("imagens/preds_ets.png", width = 158, height = 93, units = "mm")
 
 
+ets_preds %>% as.data.frame() %>% xtable()
+
 ets_cox_preds <- forecast(mod_ets_cox, h = h, level = c(95))
 autoplot(treino) + xlab("Ano") + ylab("Valor Observado") +
   theme_bw() +
-  autolayer(ets_cox_preds, series="ETS") +
+  autolayer(ets_cox_preds, series="ETS Box-cox") +
   autolayer(teste, series="Observações") +
-  scale_colour_manual(values = c("ETS" = "#8B0000", "Observações" = "black"), breaks = c("ETS", "Observações"), name = "") 
+  scale_colour_manual(values = c("ETS Box-cox" = "#8B0000", "Observações" = "black"), breaks = c("ETS Box-cox", "Observações"), name = "") 
 ggsave("imagens/preds_ets_cox.png", width = 158, height = 93, units = "mm")
 
+
+
+ets_cox_preds %>% as.data.frame() %>% xtable()
 # Comparação com a auto.arima()
 
 autoarima_preds <- forecast(auto.arima(treino), h = h)
